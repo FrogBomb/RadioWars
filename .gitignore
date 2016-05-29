@@ -4,6 +4,9 @@ config.js
 #Node Files
 node_modules
 
+#Distribution folder
+dist/
+
 # Windows image file caches
 Thumbs.db
 ehthumbs.db
