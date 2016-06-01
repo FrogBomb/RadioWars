@@ -1,3 +1,4 @@
+var gulp = require('gulp');
 var handlebars = require('gulp-handlebars');
 var wrap = require('gulp-wrap');
 var declare = require('gulp-declare');
@@ -12,7 +13,7 @@ gulp.task('clean', function(){
 });
 
 gulp.task('templates', ['clean'], function(){
-  gulp.src('source/templates/*.hbs')
+  gulp.src('./html/templates/*.hbs')
     .pipe(handlebars())
     .pipe(wrap('Handlebars.template(<%= contents %>)'))
     .pipe(declare({

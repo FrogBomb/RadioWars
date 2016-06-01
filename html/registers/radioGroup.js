@@ -1,0 +1,1 @@
+Handlebars.registerPartial('radioButton', '<input type="radio" name="{{groupName}}" value="{{team}}" class="{{team}}-button">{{team}}<br>');

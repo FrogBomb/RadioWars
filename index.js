@@ -171,6 +171,7 @@
 		req.session.username = req.body.username;
 		res.send("Logged in as: " + req.session.username);
 	});
+	
 	//GET /gameroom: send JSON file for the gameroom.
 	app.get('/gameroom', function(req, res){
 		res.sendfile(getRoomOf(req).mapInfoRef);
