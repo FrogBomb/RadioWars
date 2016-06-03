@@ -1,0 +1,9 @@
+{{#map mapData}} 
+	{{#if isRadio}}
+		<div class = "mapCell{{coords}} radioGroup {{startTeamClass}}">
+			{{#each teams}}{{>radioButton}}{{/each}}
+		</div>
+	{{else}}
+		<div class = "mapCell{{{coords}}} {{{startTeamClass}}}"></div>
+	{{/if}}
+{{/map}}

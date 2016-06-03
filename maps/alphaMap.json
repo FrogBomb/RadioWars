@@ -1,8 +1,9 @@
 {"numTeams": 2,
  "numRadios": 12,
- "mapGridSize":[5, 12],
- "radioGridLoc": [[0,1],[1,2],[2,1],[3,2],[4,1],[2,5],[2,6],[0,11],[1,10],[2,11],[3,10],[4,11]],
+ "mapGridSize":[12, 5],
+ "radioGridLoc": [[1,0],[2,1],[1,2],[2,3],[1,4],[5,2],[6,2],[11,0],[10,1],[11,2],[10,3],[11,4]],
  "radioStartStates": [0,0,0,0,0,1,0,1,1,1,1,1],
- "startFields": [{"topLeft": [0,0], "botRight":[5,4]},
-				 {"topLeft":[0,7], "botRight":[11,11]}]
+ "startFields": [{x:0, y:0, width:1, height: 5},
+				 {x:11, y:0, width:1, height: 5}],
+ "teamNames": ["red", "blue"]
 }
