@@ -1,0 +1,1 @@
+module.export = {secret: "YOUR_RANDOM_SECRET_KEY_HERE!"};

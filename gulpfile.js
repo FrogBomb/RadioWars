@@ -9,11 +9,11 @@ var del = require('del');
  
 
 gulp.task('clean', function(){
-    return del(['./dist/index.html', './dist/scripts/*', './dist/css/*']);
+    return del(['./dist/**/*']);
 });
 
-gulp.task('templates', ['clean'], function(){
-  gulp.src('./html/templates/*.hbs')
+gulp.task('handlebars', ['clean'], function(){
+  gulp.src('./frontend/hbsTemplates/*.hbs')
     .pipe(handlebars())
     .pipe(wrap('Handlebars.template(<%= contents %>)'))
     .pipe(declare({
@@ -21,28 +21,44 @@ gulp.task('templates', ['clean'], function(){
       noRedeclare: true, // Avoid duplicate declarations 
     }))
     .pipe(concat('hbsTemplates.js'))
+  	.pipe(uglify())
     .pipe(gulp.dest('dist/js/'));
 });
 
 
 gulp.task('moveHTML',['clean'], function(){
-    return gulp.src('./html/*.html')
+    return gulp.src('./frontend/*.html')
         .pipe(gulp.dest('dist'));
 });
 
 
-gulp.task('combineTools', ['clean'], function(){
-    return gulp.src('./tools/**/*.js')
-        .pipe(concat('tools.js'))
+gulp.task('combineFrontendJs', ['clean'], function(){
+    return gulp.src('./frontend/js/**/*.js')
+        .pipe(concat('compiled.js'))
         .pipe(uglify())
-        .pipe(gulp.dest('./dist/js/'));
-
+        .pipe(gulp.dest('dist/js/'));
 });
 
 gulp.task('combineCSS', ['clean'], function(){
-    return gulp.src('./css/**/*.css')
+    return gulp.src('./frontend/css/**/*.css')
         .pipe(concat('combined.css'))
-        .pipe(gulp.dest('./dist/css'));
+        .pipe(gulp.dest('dist/css/'));
 });
 
-gulp.task('default', ['clean','combineTools', 'combineCSS', 'moveHTML']);
+gulp.task('moveIndexJS', ['clean'], function(){
+	return gulp.src('./server/index.js')
+        .pipe(uglify())
+        .pipe(gulp.dest('dist'));
+});
+
+gulp.task('moveServerJSON', ['clean'], function(){
+	return gulp.src('./server/*.json')
+		.pipe(gulp.dest('dist'));
+});
+gulp.task('moveConfigFile', ['clean'], function(){
+	return gulp.src('./server/config.js')
+		.pipe(uglify())
+		.pipe(gulp.dest('dist'));
+});
+		  
+gulp.task('default', ['clean','handlebars', 'moveHTML', 'combineFrontendJs', 'combineCSS', 'moveIndexJS', 'moveServerJSON', 'moveConfigFile']);

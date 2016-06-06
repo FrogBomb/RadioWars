@@ -2,7 +2,7 @@
 	"use strict";
 	
 	var PORT = 3000;
-	var BASE_HTML_FILE = './dist/index.html'
+	var BASE_HTML_FILE = './index.html'
 	
 	var fs = require('fs');
 	
