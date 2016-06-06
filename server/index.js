@@ -1,7 +1,7 @@
 ;(function(){
 	"use strict";
 	
-	var PORT = 3000;
+	var PORT = 80;
 	var BASE_HTML_FILE = './index.html'
 	
 	var fs = require('fs');
@@ -9,20 +9,27 @@
 	var express = require('express');
 	var bodyParser = require('body-parser');
 	var cookieParser = require('cookie-parser');
-	var expressSession = require('express-session');
-	
 	var config = require('./config.js');
 	
-	var app = express();
+	var expressSession = require('express-session')({
+			secret: config.secret,
+			resave: true,
+			saveUninitialized: true
+		});
+	var ioSession = require("express-socket.io-session");
+	
+	
+	var app = express.createServer();
+	var io = require("socket.io")(app);
+	
+	var cpCalled = cookieParser();
 	
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({extended: true}));
-	app.use(cookieParser());
-	app.use(expressSession({
-		secret: config.secret,
-		resave: true,
-    	saveUninitialized: true
-	}));
+	app.use(cpCalled);
+	app.use(expressSession);
+	io.use(ioSession(expressSession, cpCalled)); 
+	
 	
 	//All availible rooms
 	var ROOMS = [];
@@ -117,7 +124,7 @@
 	
 	
 	Room.prototype = Object.create({
-		updateMouse: function(newP, newV, time, i){
+		updateMouse: function(newP, newV, time, index){
 			if(time>this.mouses[index].time){
 				this.prevMouses[index] = this.mouses[index];
 				this.mouses[index] = {pos: newP, vel: newV, time: time}; 
@@ -153,23 +160,51 @@
 		return ROOMS[req.session.roomNumber];
 	}
 	//Gets the single radio change data of the request to put directly into gameState.updateRadio
-	function getRadioDataOf(req){
-		return [{state: req.session.state, time: req.session.time}, getPIndexOf(req)];
-	}
-	//Gets the mouse data of the request to put directly into room.updateMouse
-	function getMouseDataOf(req){
-		return [req.session.pos, req.session.vel, req.session.time, getPIndexOf(req)];
-	}
-	
-	//GET ROOT: send the base html page. 
+//	function getRadioDataOf(req){
+//		return [{state: req.body.state, time: req.body.time}, getPIndexOf(req)];
+//	}
+//	//Gets the mouse data of the request to put directly into room.updateMouse
+//	function getMouseDataOf(req){
+//		return [req.body.pos, req.body.vel, req.body.time, getPIndexOf(req)];
+//	}
+//	
+//	//GET ROOT: send the base html page. 
 	app.get('/', function(req, res){
 		res.sendfile(BASE_HTML_FILE);
 	});
 	
-	//POST /login: Login with a requested username (no password needed!)
-	app.post('/login', function(req, res){
-		req.session.username = req.body.username;
-		res.send("Logged in as: " + req.session.username);
+	io.on('connection', function(socket){
+		var room = null;
+		socket.handshake.session.roomNumber = -1;
+		socket.handshake.session.roomIndex = -1;
+		
+		socket.on("login", function(userdata) {
+			socket.handshake.session.userdata = userdata;
+		});
+		socket.on('gameroom', function(roomNumber){
+			socket.handshake.session.roomNumber = roomNumber;
+			room = ROOMS[roomNumber];
+			socket.handshake.session.roomIndex = room.addPlayer();
+			socket.join(room.name);
+			socket.broadcast.to
+			socket.on('leaveGameroom', function(){
+				if(room){
+					socket.leave(room.name);
+				}
+				room = null;
+				socket.handshake.session.roomNumber = -1;
+				socket.handshake.session.roomIndex = -1;
+			});
+		});
+		socket.on('mouseUpdate', function(mouseData){
+			if(room){
+				room.updateMouse.apply(mouseData);
+			}
+		});
+		socket.on('radioUpdate', function(radioData){
+			if(room){//TODO
+			}
+		});
 	});
 	
 	//GET /gameroom: send JSON file for the gameroom.
