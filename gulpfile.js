@@ -60,5 +60,9 @@ gulp.task('moveConfigFile', ['clean'], function(){
 		.pipe(uglify())
 		.pipe(gulp.dest('dist'));
 });
+gulp.task('moveMaps', ['clean'], function(){
+	return gulp.src('./server/maps/*.json')
+		.pipe(gulp.dest('dist/maps'));
+});
 		  
-gulp.task('default', ['clean','handlebars', 'moveHTML', 'combineFrontendJs', 'combineCSS', 'moveIndexJS', 'moveServerJSON', 'moveConfigFile']);
+gulp.task('default', ['clean','handlebars', 'moveHTML', 'combineFrontendJs', 'combineCSS', 'moveIndexJS', 'moveServerJSON', 'moveConfigFile', 'moveMaps']);
