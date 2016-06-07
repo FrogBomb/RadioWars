@@ -92,7 +92,7 @@
 
 	GameState.prototype = Object.create({
 		updateRadio: function(radio, i){
-			if(this.radios){
+			if(this.radios[i]){
 				this.radios[i].update(radio.time, radio.state);
 			}
 			else{
@@ -173,38 +173,81 @@
 		res.sendfile(BASE_HTML_FILE);
 	});
 	
+	var UPDATESPEED =  16; //ms
 	io.on('connection', function(socket){
-		var room = null;
-		socket.handshake.session.roomNumber = -1;
-		socket.handshake.session.roomIndex = -1;
 		
+		//Variables that will change later
+		var room = null;
+		var getUpdates = null;
+		socket.handshake.session.roomNumber = null;
+		socket.handshake.session.roomIndex = null;
+		
+		//login: Currently will only expect a name in userdata.
 		socket.on("login", function(userdata) {
 			socket.handshake.session.userdata = userdata;
 		});
+		
+		//gameroom: join the room with the given room number
 		socket.on('gameroom', function(roomNumber){
-			socket.handshake.session.roomNumber = roomNumber;
 			room = ROOMS[roomNumber];
 			socket.handshake.session.roomIndex = room.addPlayer();
+			socket.handshake.session.roomNumber = roomNumber;
 			socket.join(room.name);
-			socket.broadcast.to
+			
+			//Tell other players a new player has joined
+			socket.broadcast
+				.to(room.name)
+				.emit('newPlayer', socket.handshake.session.userdata.name);
+			
+			//Give the joined player room information and assign them a team
+			socket.broadcast
+				.to(socket.id)
+				.emit('joinedRoom', 
+					{
+						roomname: room.name,
+						team: room.getRadioTeam(res.session.roomIndex)
+					});
+			
+			//Send regular updates to the joining player according to their room name
+			getUpdates = setInterval(function(){
+				socket.voltile
+					.emit('updateFromRoom ' + room.name, 
+						{
+							mouseData: {cur: room.mouses, prev: room.prevMouses},
+							radios: room.gameState.radios
+						});
+			}, UPDATESPEED);
+			
+			//Handle for a user leaving a gameroom.
 			socket.on('leaveGameroom', function(){
 				if(room){
 					socket.leave(room.name);
 				}
+				if(getUpdates !== null){
+					clearInterval(getUpdates);
+					getUpdates = null;
+				}
 				room = null;
-				socket.handshake.session.roomNumber = -1;
-				socket.handshake.session.roomIndex = -1;
+				socket.handshake.session.roomNumber = null;
+				socket.handshake.session.roomIndex = null;
 			});
 		});
+		
+		//Update the server about a mouse position, velocity, and time of polling
 		socket.on('mouseUpdate', function(mouseData){
 			if(room){
 				room.updateMouse.apply(mouseData);
 			}
 		});
+		
+		//Update the server about the radio state and time of polling
 		socket.on('radioUpdate', function(radioData){
-			if(room){//TODO
+			if(room){
+				room.gameState.radios.apply(radioData);
 			}
 		});
+		
+		
 	});
 	
 	//GET /gameroom: send JSON file for the gameroom.
@@ -212,40 +255,40 @@
 		res.sendfile(getRoomOf(req).mapInfoRef);
 	});
 	
-	//POST /gameroom: assign the room number of the player to the requested room number.
-	app.post('/gameroom', function(req, res){
-		req.session.roomNumber = req.body.roomNumber;
-		var room = getRoomOf(req);
-		req.session.roomIndex = room.addPlayer();
-		res.send(JSON.stringify({radioTeam: room.getRadioTeam(res.session.roomIndex)}));
-	});
-	
-	//POST /mouses: sends info about the current player's mouse.
-	app.post('/mouses', function(req, res){
-		var room = getRoomOf(req);
-		var mData = getMouseDataOf(req);
-		room.updateMouse.apply(mData);			
-	});
-	
-	//GET /mouses: gets the mouse info of all players in the room.
-	app.get('/mouses', function(req, res){
-		var room = getRoomOf(req);
-		res.send(JSON.stringify({cur: room.mouses, prev: room.prevMouses}));
-	});
-	
-	//POST /radiostatus: sends info about a radio button change
-	app.post('/radiostatus', function(req, res){
-		var room = getRoomOf(req);
-		var rData = getRadioStatusDataOf(req);
-		room.gameState.updateRadio.apply(rData);
-	});
-	
-	//GET /radiostatus: gets the status of all radio buttons. 
-	app.get('/radiostatus', function(req, res){
-		var room = getRoomOf(req);
-		res.send(JSON.stringify(room.gameState.radios));
-	});
-	
+//	//POST /gameroom: assign the room number of the player to the requested room number.
+//	app.post('/gameroom', function(req, res){
+//		req.session.roomNumber = req.body.roomNumber;
+//		var room = getRoomOf(req);
+//		req.session.roomIndex = room.addPlayer();
+//		res.send(JSON.stringify({radioTeam: room.getRadioTeam(res.session.roomIndex)}));
+//	});
+//	
+//	//POST /mouses: sends info about the current player's mouse.
+//	app.post('/mouses', function(req, res){
+//		var room = getRoomOf(req);
+//		var mData = getMouseDataOf(req);
+//		room.updateMouse.apply(mData);			
+//	});
+//	
+//	//GET /mouses: gets the mouse info of all players in the room.
+//	app.get('/mouses', function(req, res){
+//		var room = getRoomOf(req);
+//		res.send(JSON.stringify({cur: room.mouses, prev: room.prevMouses}));
+//	});
+//	
+//	//POST /radiostatus: sends info about a radio button change
+//	app.post('/radiostatus', function(req, res){
+//		var room = getRoomOf(req);
+//		var rData = getRadioStatusDataOf(req);
+//		room.gameState.updateRadio.apply(rData);
+//	});
+//	
+//	//GET /radiostatus: gets the status of all radio buttons. 
+//	app.get('/radiostatus', function(req, res){
+//		var room = getRoomOf(req);
+//		res.send(JSON.stringify(room.gameState.radios));
+//	});
+//	
 	
 	
 	app.use(express.static('public'));

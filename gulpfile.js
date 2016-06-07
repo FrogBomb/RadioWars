@@ -6,7 +6,6 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var gulpIf = require('gulp-if');
 var del = require('del');
- 
 
 gulp.task('clean', function(){
     return del(['./dist/**/*']);
@@ -68,5 +67,7 @@ gulp.task('moveMaps', ['clean'], function(){
 	return gulp.src('./server/maps/*.json')
 		.pipe(gulp.dest('dist/maps'));
 });
+
+
 		  
 gulp.task('default', ['clean','handlebars', 'moveHTML', 'combineFrontendJs', 'combineCSS', 'moveIndexJS', 'moveServerJSON', 'movePackageJSON', 'moveConfigFile', 'moveMaps']);
