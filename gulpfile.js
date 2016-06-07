@@ -55,6 +55,10 @@ gulp.task('moveServerJSON', ['clean'], function(){
 	return gulp.src('./server/*.json')
 		.pipe(gulp.dest('dist'));
 });
+gulp.task('movePackageJSON', ['clean'], function(){
+	return gulp.src('./package.json')
+		.pipe(gulp.dest('dist'));
+});
 gulp.task('moveConfigFile', ['clean'], function(){
 	return gulp.src('./server/config.js')
 		.pipe(uglify())
@@ -65,4 +69,4 @@ gulp.task('moveMaps', ['clean'], function(){
 		.pipe(gulp.dest('dist/maps'));
 });
 		  
-gulp.task('default', ['clean','handlebars', 'moveHTML', 'combineFrontendJs', 'combineCSS', 'moveIndexJS', 'moveServerJSON', 'moveConfigFile', 'moveMaps']);
+gulp.task('default', ['clean','handlebars', 'moveHTML', 'combineFrontendJs', 'combineCSS', 'moveIndexJS', 'moveServerJSON', 'movePackageJSON', 'moveConfigFile', 'moveMaps']);
