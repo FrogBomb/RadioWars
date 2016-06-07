@@ -247,6 +247,14 @@
 			}
 		});
 		
+		//Log Disconnects
+		socket.on('disconnect', function(){
+			var username = socket.handshake.session.userdata.name;
+			if(!user){
+				username = "Unknown User";
+			}
+			console.log(username + " has disconnected on " + (new Date(Date.now())).toLocaleString());
+		}); 
 		
 	});
 	
