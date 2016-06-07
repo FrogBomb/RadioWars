@@ -4,34 +4,39 @@
 	"use strict";
 	
 	var PORT = 80;
-	var BASE_HTML_FILE = './index.html'
+	var BASE_HTML_FILE = __dirname + '/index.html';
 	
 	var fs = require('fs');
 	
 	var express = require('express');
 	var bodyParser = require('body-parser');
-	var cookieParser = require('cookie-parser');
 	var config = require('./config.js');
+	var http = require('http');
 	
-	var expressSession = require('express-session')({
-			secret: config.secret,
-			resave: true,
-			saveUninitialized: true
-		});
-	var ioSession = require("express-socket.io-session");
+	var session = require('express-session');
 	
 	
-	var app = express.createServer();
-	var io = require("socket.io")(app);
+	var app = express();
+	var server = http.createServer(app);
+	var io = require("socket.io")(server);
 	
-	var cpCalled = cookieParser();
+	var sessionSet = session({
+		  secret: config.secret,
+		  resave: false,
+		  saveUninitialized: true,
+		  cookie: { secure: true }
+	});
 	
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({extended: true}));
-	app.use(cpCalled);
-	app.use(expressSession);
-	io.use(ioSession(expressSession, cpCalled)); 
+	app.use(sessionSet);
 	
+	io.use(function(socket, next) {
+		var req = socket.handshake;
+		var res = {};
+		sessionSet(req, res, next);
+	});
+
 	
 	//All availible rooms
 	var ROOMS = [];
@@ -44,7 +49,7 @@
 	loadMaps();
 	
 	function loadMaps(){
-		fs.readfile('./maps.json', function(err, data){
+		fs.readFile('./maps.json', function(err, data){
 			if(err){return console.log(err);}
 			MAPS = JSON.parse(data);
 			MAPS.loaded = true;
@@ -57,9 +62,9 @@
 		//Clears the existing rooms
 		ROOMS.length = 0;
 		//Generating default rooms
-		ROOMS.push(Room('noob room', MAPS['alpha']));
-		ROOMS.push(Room('kinda good room', MAPS['alpha']));
-		ROOMS.push(Room('pro room', MAPS['alpha']));
+		ROOMS.push(new Room('noob room', MAPS['alpha']));
+		ROOMS.push(new Room('kinda good room', MAPS['alpha']));
+		ROOMS.push(new Room('pro room', MAPS['alpha']));
 	}
 	
 	//Constructor for a new RadioState
@@ -115,7 +120,7 @@
 		this.mapInfoRef = mapInfoRef;//file reference to generate the game room.
 		this.mapData; // Will hold the map data object from mapInfoRef
 		this.mapFileRead = false;
-		fs.readfile(mapInfoRef, readMapFileCallback.bind(this))
+		fs.readFile(mapInfoRef, readMapFileCallback.bind(this))
 		//Server side game state.
 		this.gameState = new GameState();
 		//array of current mouse positions (pos), velocities (vel), and update timestamps (time).
@@ -176,9 +181,17 @@
 //	
 //	//GET ROOT: send the base html page. 
 	app.get('/', function(req, res){
-		res.sendfile(BASE_HTML_FILE);
+		res.sendFile(BASE_HTML_FILE);
 	});
-	
+	app.get('/js/compiled.js', function(req, res){
+		res.sendFile(__dirname + "/js/compiled.js");
+	});
+	app.get('/js/hbsTemplates.js', function(req, res){
+		res.sendFile(__dirname + "/js/hbsTemplates.js");
+	});
+	app.get('/css/combined.css', function(req, res){
+		res.sendFile(__dirname + "/css/combined.css");
+	});
 	var UPDATESPEED =  16; //ms
 	io.on('connection', function(socket){
 		

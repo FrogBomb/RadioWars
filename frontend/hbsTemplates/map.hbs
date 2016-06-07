@@ -1,9 +1,11 @@
-{{#map mapData}} 
+{{#map mapData}}
 	{{#if isRadio}}
-		<div class = "mapCell{{coords}} radioGroup {{startTeamClass}}">
-			{{#each teams}}{{>radioButton}}{{/each}}
+		<div class = "mapCell radioGroup{{{startTeamClass}}}">
+			{{#each teams}}
+			<input type="radio" name="{{{groupName}}}" value="{{{team}}}" class="{{{team}}}-button">{{{team}}}<br>
+			{{/each}}
 		</div>
 	{{else}}
-		<div class = "mapCell{{{coords}}} {{{startTeamClass}}}"></div>
+		<div class = "mapCell {{{startTeamClass}}}"></div>
 	{{/if}}
 {{/map}}

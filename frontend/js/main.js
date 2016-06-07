@@ -34,7 +34,11 @@ function onJoinRoom(roomData){//TODO
 	*/
 }
 
-;(function(){
+//START
+document.addEventListener("DOMContentLoaded", function(event) { 
 	var UPDATESPEED = 16; //ms
-	
-})();
+	document.getElementsByClassName("mapHolder")[0].innerHTML =
+		RadioWars
+		.templates.map(
+		{mapData: {startFields:[], mapGridSize:[12, 5], teamNames: ["red", "blue", "cool"], radioGridLoc:[[1,1],[4,4], [11, 0]]}});
+});

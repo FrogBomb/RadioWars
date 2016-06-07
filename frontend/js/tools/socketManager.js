@@ -1,10 +1,13 @@
-var socket = io.connect(window.location.href);
+function setupSocket(){
+	var socket = io.connect(window.location.href);
+	socket.on('newPlayer', onNewPlayerJoin);
 
-socket.on('newPlayer', onNewPlayerJoin);
+	socket.on('joinedRoom', onJoinRoom);
+}
 
-socket.on('joinedRoom', onJoinRoom);
 
-function socketRoomUpdatesFrom(roomName){
+
+function socketUpdatesFrom(roomName){
 	socket.removeAllListeners('updateFromRoom '+ socketUpdatesFrom.oldRoomname);
 	socket.on('updateFromRoom ' + roomName, onRoomUpdate)
 }
