@@ -37,7 +37,7 @@ function onJoinRoom(roomData){//TODO
 //START
 document.addEventListener("DOMContentLoaded", function(event) { 
 	var UPDATESPEED = 16; //ms
-//	setupSocket();
+	setupSocket();
 	document.getElementsByClassName("mapHolder")[0].innerHTML =
 		RadioWars
 		.templates.map(

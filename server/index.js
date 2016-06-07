@@ -17,7 +17,7 @@
 	
 	
 	var app = express();
-	var server = http.createServer(app);
+	var server = http.Server(app);
 	var io = require("socket.io")(server);
 	
 	var sessionSet = session({
@@ -330,7 +330,7 @@
   		res.status(500).send('Something broke!');
 	});
 	
-	app.listen(PORT, function() {
+	server.listen(PORT, function() {
 		console.log("server started on port " + PORT);
 	});
 })();

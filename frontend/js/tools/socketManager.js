@@ -1,5 +1,6 @@
+var socket;
 function setupSocket(){
-	var socket = io.connect(window.location.href);
+	socket = io.connect(window.location.href);
 	socket.on('newPlayer', onNewPlayerJoin);
 
 	socket.on('joinedRoom', onJoinRoom);
