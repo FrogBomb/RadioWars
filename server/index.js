@@ -27,15 +27,13 @@
 		  cookie: { secure: true }
 	});
 	
+	var sharedsession = require("express-socket.io-session");
+	
 	app.use(bodyParser.json());
 	app.use(bodyParser.urlencoded({extended: true}));
 	app.use(sessionSet);
 	
-	io.use(function(socket, next) {
-		var req = socket.handshake;
-		var res = {};
-		sessionSet(req, res, next);
-	});
+	io.use(sharedsession(sessionSet)); 
 
 	
 	//All availible rooms
@@ -192,9 +190,11 @@
 	app.get('/css/combined.css', function(req, res){
 		res.sendFile(__dirname + "/css/combined.css");
 	});
+	
 	var UPDATESPEED =  16; //ms
 	io.on('connection', function(socket){
 		
+		console.log("Socket Connected!");
 		//Variables that will change later
 		var room = null;
 		var getUpdates = null;
