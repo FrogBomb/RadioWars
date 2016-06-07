@@ -148,7 +148,11 @@
 				return roomIndex%this.mapInfo.numTeams;
 			}
 			return -1;//Map file not yet read
-		}
+		},
+		//Clears the room
+		clear: function(){ Room(this.name, this.mapInfoRef) },
+		//Starts a game in the room
+		start: function(){ console.log("Game started")}//TODO
 	});
 	
 	//Gets the player room index of the request
