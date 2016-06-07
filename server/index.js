@@ -208,8 +208,9 @@
 				.to(socket.id)
 				.emit('joinedRoom', 
 					{
-						roomname: room.name,
+						roomName: room.name,
 						team: room.getRadioTeam(res.session.roomIndex)
+						
 					});
 			
 			//Send regular updates to the joining player according to their room name
