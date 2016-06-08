@@ -38,8 +38,9 @@ Handlebars.registerHelper("map", function(mapData, options){
 			}
 			ret += options.fn({
 				teams: mapData.teamNames.map(
-					function(team){return {	team: team,
-											groupName: coords}}),
+					function(team, i){return {	team: team,
+											  	teamNum: i,
+												groupName: coords}}),
 				isRadio: isTwoTupleInArray([i, j], mapData.radioGridLoc),
 				startTeamClass: startTeamClass
 			});

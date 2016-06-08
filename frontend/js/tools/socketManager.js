@@ -2,8 +2,9 @@ var socket;
 function setupSocket(){
 	socket = io.connect(window.location.href);
 	socket.on('newPlayer', onNewPlayerJoin);
-
+	socket.on('roomIndex', setRoomIndex);
 	socket.on('joinedRoom', onJoinRoom);
+	socket.on('syncTime', onSyncTime);
 }
 
 

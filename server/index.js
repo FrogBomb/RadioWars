@@ -150,7 +150,7 @@
 		//Returns radio team of the player with the passed roomIndex
 		getRadioTeam: function(roomIndex){
 			if(this.mapFileRead){
-				return roomIndex%this.mapInfo.numTeams;
+				return roomIndex%this.mapData.numTeams;
 			}
 			return -1;//Map file not yet read
 		},
@@ -198,8 +198,16 @@
 		//Variables that will change later
 		var room = null;
 		var getUpdates = null;
-		socket.handshake.session.roomNumber = null;
-		socket.handshake.session.roomIndex = null;
+		if(!socket.handshake.session.userdata){
+			socket.handshake.session.userdata = {};
+			socket.handshake.session.userdata.name = "Guest";
+		}
+		if(!socket.handshake.session.roomNumber){
+			socket.handshake.session.roomNumber = null;
+		}
+		if(!socket.handshake.session.roomIndex){
+			socket.handshake.session.roomIndex = null;
+		}
 		
 		//login: Currently will only expect a name in userdata.
 		socket.on("login", function(userdata) {
@@ -208,8 +216,15 @@
 		
 		//gameroom: join the room with the given room number
 		socket.on('gameroom', function(roomNumber){
+			
+			console.log(roomNumber);
+			
 			room = ROOMS[roomNumber];
-			socket.handshake.session.roomIndex = room.addPlayer();
+			var roomIndex = room.addPlayer();
+			socket.handshake.session.roomIndex = roomIndex;
+			
+			socket.emit('roomIndex', roomIndex);
+				
 			socket.handshake.session.roomNumber = roomNumber;
 			socket.join(room.name);
 			
@@ -224,13 +239,14 @@
 				.emit('joinedRoom', 
 					{
 						roomName: room.name,
-						team: room.getRadioTeam(res.session.roomIndex)
+						team: room.getRadioTeam(socket.handshake.session.roomIndex),
+						mapData: fs.readFile(getRoomOf(socket.handshake).mapInfoRef)
 						
 					});
 			
 			//Send regular updates to the joining player according to their room name
 			getUpdates = setInterval(function(){
-				socket.voltile
+				socket
 					.emit('updateFromRoom ' + room.name, 
 						{
 							mouseData: {cur: room.mouses, prev: room.prevMouses},
@@ -253,35 +269,42 @@
 			});
 		});
 		
-		//Update the server about a mouse position, velocity, and time of polling
+		//Update the server about a mouse position, player index, and time of polling
 		socket.on('mouseUpdate', function(mouseData){
 			if(room){
-				room.updateMouse.apply(mouseData);
+				var oldMouse = room.mouses[mouseData.index];
+				var tdiff = mouseData.time-oldMouse.time;
+				var newVel = [(mouseData.mouseCoords[0]-oldMouse.pos[0])/tdiff,
+							  (mouseData.mouseCoords[1]-oldMouse.pos[1])/tdiff];
+				room.updateMouse(mouseData.mouseCoords,
+								 newVel,
+								 mouseData.time,
+								 mouseData.index);
 			}
 		});
 		
 		//Update the server about the radio state and time of polling
 		socket.on('radioUpdate', function(radioData){
 			if(room){
-				room.gameState.radios.apply(radioData);
+				room.gameState.updateRadio.apply(radioData);
 			}
 		});
 		
 		//Log Disconnects
 		socket.on('disconnect', function(){
-			var username = socket.handshake.session.userdata.name;
-			if(!user){
-				username = "Unknown User";
+			var username = "Unknown User";
+			if(socket.handshake.session.userdata.name){
+				username = socket.handshake.session.userdata.name;
 			}
 			console.log(username + " has disconnected on " + (new Date(Date.now())).toLocaleString());
 		}); 
 		
 	});
 	
-	//GET /gameroom: send JSON file for the gameroom.
-	app.get('/gameroom', function(req, res){
-		res.sendfile(getRoomOf(req).mapInfoRef);
-	});
+//	//GET /gameroom: send JSON file for the gameroom.
+//	app.get('/gameroom', function(req, res){
+//		res.sendfile(getRoomOf(req).mapInfoRef);
+//	});
 	
 //	//POST /gameroom: assign the room number of the player to the requested room number.
 //	app.post('/gameroom', function(req, res){

@@ -2,7 +2,7 @@
 	{{#if isRadio}}
 		<div class = "mapCell radioGroup{{{startTeamClass}}}">
 			{{#each teams}}
-			<span  class="{{{team}}}-button"><input type="radio" name="{{{groupName}}}" value="{{{team}}}">{{{team}}}</span><br>
+			<span  class="{{{team}}}-button"><input onclick="onRadioClick()" type="radio" name="{{{groupName}}}" value="{{{teamNum}}}">{{{team}}}</span><br>
 			{{/each}}
 		</div>
 	{{else}}
