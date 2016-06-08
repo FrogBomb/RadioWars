@@ -217,8 +217,6 @@
 		//gameroom: join the room with the given room number
 		socket.on('gameroom', function(roomNumber){
 			
-			console.log(roomNumber);
-			
 			room = ROOMS[roomNumber];
 			var roomIndex = room.addPlayer();
 			socket.handshake.session.roomIndex = roomIndex;
@@ -226,6 +224,16 @@
 			socket.emit('roomIndex', roomIndex);
 				
 			socket.handshake.session.roomNumber = roomNumber;
+			
+			socket
+				.emit('joinedRoom', 
+					{
+						roomName: room.name,
+						team: room.getRadioTeam(socket.handshake.session.roomIndex),
+						mapData: ROOMS[roomNumber].mapData
+						
+					});
+			
 			socket.join(room.name);
 			
 			//Tell other players a new player has joined
@@ -234,15 +242,7 @@
 				.emit('newPlayer', socket.handshake.session.userdata.name);
 			
 			//Give the joined player room information and assign them a team
-			socket.broadcast
-				.to(socket.id)
-				.emit('joinedRoom', 
-					{
-						roomName: room.name,
-						team: room.getRadioTeam(socket.handshake.session.roomIndex),
-						mapData: fs.readFile(getRoomOf(socket.handshake).mapInfoRef)
-						
-					});
+			
 			
 			//Send regular updates to the joining player according to their room name
 			getUpdates = setInterval(function(){

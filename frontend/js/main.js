@@ -50,11 +50,11 @@ function onJoinRoom(roomData){//TODO
 			.mapData: JSON of map file data
 	*/
 	console.log("Joined Room " + roomData.roomName + " on team " + roomData.team);
-	displayMapFromFile(roomData.mapData);
+	displayMapFromFile(roomData);
 	socketUpdatesFrom(roomData.roomName);
 }
 
-function renderMapFromFile(mapContext){
+function displayMapFromFile(mapContext){
 	document.getElementsByClassName("mapHolder")[0].innerHTML =
 		RadioWars.templates.map(mapContext);
 }
@@ -83,7 +83,16 @@ function login(userdata){
 }
 
 function gotoRoom(roomNumber){
+	hideButtons();
 	socket.emit('gameroom', roomNumber);
+}
+
+function hideButtons(){
+	var roomButtonDiv = document.getElementsByClassName("roomButtons")[0];
+	var buttons = roomButtonDiv.children;
+	for(var i = 0; i<buttons.length; i++){
+		buttons[i].style.visibility = "hidden";
+	}
 }
 
 document.addEventListener("DOMContentLoaded", onLoad);

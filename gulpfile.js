@@ -34,7 +34,7 @@ gulp.task('moveHTML',['clean'], function(){
 gulp.task('combineFrontendJs', ['clean'], function(){
     return gulp.src('./frontend/js/**/*.js')
         .pipe(concat('compiled.js'))
-        .pipe(uglify())
+//        .pipe(uglify())
         .pipe(gulp.dest('dist/js/'));
 });
 

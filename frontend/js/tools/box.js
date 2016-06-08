@@ -1,8 +1,8 @@
 function box(top, left, height, width){
 	function hitsPoint(x, y){
-		x -= left;
-		y -= top;
-		if(x<0 || y<0 || y>=height || x>=width){
+		var relX = x-left;
+		var relY = y-top;
+		if(relX <0 || relY <0 || relY >=height || relX >=width){
 			return false;
 		}
 		return true;

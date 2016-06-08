@@ -21,8 +21,10 @@ Handlebars.registerHelper("map", function(mapData, options){
 			.radioGridLoc[i] : [x, y]
 	*/
 	var startBoxes = [];
-	for(var sbs in mapData.startFields){
-		startBoxes.push(box(sbs.x, sbs.y, sbs.width, sbs.height));
+	for(var i = 0; i<mapData.startFields.length; i++){
+		var sbs = mapData.startFields[i];
+		console.log(sbs);
+		startBoxes.push(box(sbs.y, sbs.x, sbs.height, sbs.width));
 	}
 	ret = "<div style=\"width:" +102*mapData.mapGridSize[0] 
 				+"px; height:"+ 102*mapData.mapGridSize[1]  +"px\">";
@@ -33,7 +35,7 @@ Handlebars.registerHelper("map", function(mapData, options){
 			var coords = (""+i)+"x"+j;	
 			for(var k = 0; k < startBoxes.length; k++){
 				if(startBoxes[k].hitsPoint(i, j)){
-					startTeamClass += " " + teamNames[i];
+					startTeamClass += " " + mapData.teamNames[k];
 				}
 			}
 			ret += options.fn({
