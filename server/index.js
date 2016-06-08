@@ -101,7 +101,7 @@
 				this.radios[i].update(radio.time, radio.state);
 			}
 			else{
-				this.radio[i] = new RadioGroupState(radio.time, radio.state);
+				this.radios[i] = new RadioGroupState(radio.time, radio.state);
 			}
 		}
 	});
@@ -270,23 +270,24 @@
 		});
 		
 		//Update the server about a mouse position, player index, and time of polling
-		socket.on('mouseUpdate', function(mouseData){
-			if(room){
-				var oldMouse = room.mouses[mouseData.index];
-				var tdiff = mouseData.time-oldMouse.time;
-				var newVel = [(mouseData.mouseCoords[0]-oldMouse.pos[0])/tdiff,
-							  (mouseData.mouseCoords[1]-oldMouse.pos[1])/tdiff];
-				room.updateMouse(mouseData.mouseCoords,
-								 newVel,
-								 mouseData.time,
-								 mouseData.index);
-			}
-		});
+//		socket.on('mouseUpdate', function(mouseData){
+//			if(room){
+//				var oldMouse = room.mouses[mouseData.index];
+//				var tdiff = mouseData.time-oldMouse.time;
+//				var newVel = [(mouseData.mouseCoords[0]-oldMouse.pos[0])/tdiff,
+//							  (mouseData.mouseCoords[1]-oldMouse.pos[1])/tdiff];
+//				room.updateMouse(mouseData.mouseCoords,
+//								 newVel,
+//								 mouseData.time,
+//								 mouseData.index);
+//			}
+//		});
 		
-		//Update the server about the radio state and time of polling
+		//Update the server about the radio state and time of polling and index
 		socket.on('radioUpdate', function(radioData){
 			if(room){
-				room.gameState.updateRadio.apply(radioData);
+				room.gameState.updateRadio({state:radioData[0],
+										    time: radioData[1]}, radioData[2]);
 			}
 		});
 		

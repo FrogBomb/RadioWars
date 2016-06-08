@@ -59,7 +59,7 @@ function displayMapFromFile(mapContext){
 		RadioWars.templates.map(mapContext);
 }
 
-var SERVER_TIME;
+var SERVER_TIME = 0;
 function onSyncTime(serverTime){
 	SERVER_TIME = serverTime;
 }
@@ -69,14 +69,14 @@ function gameTimeNow(){
 }
 
 function handleMouseMove(event){
-	socket.emit('updateMouse',  {
+	socket.emit('mouseUpdate',  {
 		mouseCoords: [event.pageX, event.pageY], 
 		index: ROOM_INDEX, 
 		time: gameTimeNow()})
 }
 
-function onRadioClick(){
-	socket.emit('updateRadio', [this.value, gameTimeNow()]);
+function onRadioClick(value, radioIndex){
+	socket.emit('radioUpdate', [value, gameTimeNow(), radioIndex]);
 }
 function login(userdata){
 	socket.emit('login', userdata);

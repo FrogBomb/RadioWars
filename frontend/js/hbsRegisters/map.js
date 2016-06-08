@@ -1,11 +1,11 @@
-function isTwoTupleInArray(twoTuple, arr){
+function indexOfTwoTupleInArray(twoTuple, arr){
 	for(var i=0; i<arr.length; i++){
 		var t = arr[i];
 		if(t[0] == twoTuple[0] && t[1] == twoTuple[1]){
-			return true;
+			return i;
 		}
 	}
-	return false;
+	return -1;
 }
 
 Handlebars.registerHelper("map", function(mapData, options){
@@ -23,7 +23,6 @@ Handlebars.registerHelper("map", function(mapData, options){
 	var startBoxes = [];
 	for(var i = 0; i<mapData.startFields.length; i++){
 		var sbs = mapData.startFields[i];
-		console.log(sbs);
 		startBoxes.push(box(sbs.y, sbs.x, sbs.height, sbs.width));
 	}
 	ret = "<div style=\"width:" +102*mapData.mapGridSize[0] 
@@ -38,12 +37,14 @@ Handlebars.registerHelper("map", function(mapData, options){
 					startTeamClass += " " + mapData.teamNames[k];
 				}
 			}
+			var radioIndex = indexOfTwoTupleInArray([i, j], mapData.radioGridLoc);
 			ret += options.fn({
 				teams: mapData.teamNames.map(
 					function(team, i){return {	team: team,
 											  	teamNum: i,
-												groupName: coords}}),
-				isRadio: isTwoTupleInArray([i, j], mapData.radioGridLoc),
+												groupName: coords,
+											 	radioIndex: radioIndex}}),
+				isRadio: radioIndex !== -1,
 				startTeamClass: startTeamClass
 			});
 		}
