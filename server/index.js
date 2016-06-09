@@ -95,16 +95,16 @@
 //		}
 //	}
 
-	GameState.prototype = Object.create({
-		updateRadio: function(radio, i){
-			if(this.radios[i]){
-				this.radios[i].update(radio.time, radio.state);
-			}
-			else{
-				this.radios[i] = new RadioGroupState(radio.time, radio.state);
-			}
-		}
-	});
+//	GameState.prototype = Object.create({
+//		updateRadio: function(radio, i){
+//			if(this.radios[i]){
+//				this.radios[i].update(radio.time, radio.state);
+//			}
+//			else{
+//				this.radios[i] = new RadioGroupState(radio.time, radio.state);
+//			}
+//		}
+//	});
 	
 	function readMapFileCallback(err, data){
 		if(err){return console.log(err);}
@@ -120,7 +120,7 @@
 		this.mapFileRead = false;
 		fs.readFile(mapInfoRef, readMapFileCallback.bind(this))
 		//Server side game state.
-		this.gameState = new GameState();
+//		this.gameState = new GameState();
 		this.numPlayers = 0;
 //		//array of current mouse positions (pos), velocities (vel), and update timestamps (time).
 //		this.mouses = [];
