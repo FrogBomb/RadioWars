@@ -306,7 +306,7 @@
 			}
 			if(winner !== null){
 				io.in(room.name).emit('win', {winningTeam:room.mapData.teamNames[winner]});
-				room.radios = room.mapData.radioStartStates;
+				room.radios = room.mapData.radioStartStates.map(function(v){return v});
 			}
 		});
 		//Update the server about a mouse position, player index, and time of polling
