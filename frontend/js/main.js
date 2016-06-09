@@ -91,23 +91,29 @@ function onRadioClick(value, radioIndex){
 }
 function onRadioBroadcast(radioData){
 //	var firstClick = false;
-	if(onRadioBroadcast.times[radioData.radioIndex] === undefined){
-		onRadioBroadcast.times[radioData.radioIndex] = -1; //SINCE THE BEGINING OF TIME!
-//		firstClick = true;
+	onRadioBroadcast.queue.push(radioData);
+	function apply(radioData){
+			if(onRadioBroadcast.times[radioData.radioIndex] === undefined){
+			onRadioBroadcast.times[radioData.radioIndex] = -1; //SINCE THE BEGINING OF TIME!
+	//		firstClick = true;
+		}
+		if(radioData.time>onRadioBroadcast.times[radioData.radioIndex]){
+			var button = document.getElementById("button_"+radioData.state+"_"+radioData.radioIndex);
+			button.checked = true;
+			button.parentNode.parentNode.classList.remove("red-selected","blue-selected");
+			var newClass = button.parentNode.innerHTML.split(">")[1]+"-selected";
+			button.parentNode.parentNode.classList.add(newClass);
+			onRadioBroadcast.prevClass = newClass;
+			onRadioBroadcast.times[radioData.radioIndex] = radioData.time;
+		}
 	}
-	if(radioData.time>onRadioBroadcast.times[radioData.radioIndex]){
-		var button = document.getElementById("button_"+radioData.state+"_"+radioData.radioIndex);
-		button.checked = true;
-		button.parentNode.parentNode.classList.remove("red-selected","blue-selected");
-		var newClass = button.parentNode.innerHTML.split(">")[1]+"-selected";
-		button.parentNode.parentNode.classList.add(newClass);
-		console.log(button.parentNode.parentNode.classList);
-		onRadioBroadcast.prevClass = newClass;
-		onRadioBroadcast.times[radioData.radioIndex] = gameTimeNow();
+	while(onRadioBroadcast.queue.length > 0){
+		apply(onRadioBroadcast.queue.pop());
 	}
 }
 
 onRadioBroadcast.times = [];
+onRadioBroadcast.queue = [];
 
 function login(userdata){
 	socket.emit('login', userdata);
