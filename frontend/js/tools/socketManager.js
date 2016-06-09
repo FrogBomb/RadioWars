@@ -6,7 +6,8 @@ function setupSocket(){
 	socket.on('newPlayer', onNewPlayerJoin);
 	socket.on('roomIndex', setRoomIndex);
 	socket.on('joinedRoom', onJoinRoom);
-	socket.on('syncTime', onSyncTime);
+//	socket.on('syncTime', onSyncTime);
+	socket.on('win', onWin);
 }
 
 

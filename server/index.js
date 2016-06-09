@@ -110,6 +110,9 @@
 		if(err){return console.log(err);}
 		this.mapData = JSON.parse(data);
 		this.mapFileRead = true;
+		this.radios = this.mapData
+					.radioStartStates
+					.map(function(v){return v});
 	}
 	
 	//Constructor for a new room (Holds the game and manages players)
@@ -122,6 +125,10 @@
 		//Server side game state.
 //		this.gameState = new GameState();
 		this.numPlayers = 0;
+		
+		//state of radios (lighter weight than gamestate)
+		this.radios = [];
+		
 //		//array of current mouse positions (pos), velocities (vel), and update timestamps (time).
 //		this.mouses = [];
 //		//array of previous mouse positions (pos), velocities (vel), and update timestamps (time).
@@ -193,11 +200,11 @@
 		res.sendFile(__dirname + "/css/combined.css");
 	});
 	
-	var UPDATESPEED =  10000; //ms
-	setInterval(function(){
-		io.emit('syncTime', Date.now());
-	},UPDATESPEED);
-	
+//	var UPDATESPEED =  10000; //ms
+//	setInterval(function(){
+//		io.emit('syncTime', Date.now());
+//	},UPDATESPEED);
+//	
 	io.on('connection', function(socket){
 		
 		console.log("Socket Connected!");
@@ -231,7 +238,7 @@
 			socket.handshake.session.roomNumber = roomNumber;
 			
 			socket
-				.emit('joinedRoom', 
+				.emit('joinedRoom',
 					{
 						roomIndex: roomIndex,
 						roomName: room.name,
@@ -241,6 +248,17 @@
 					});
 			
 			socket.join(room.name);
+			
+			socket.on('roomLoaded', function(){
+				for(var i = 0; i<room.radios.length; i++){
+					if(room.radios[i] !== undefined){
+						io.in(room.name).emit('radiosToRoom', {
+							radioIndex: i, time: Date.now(), 
+							state: room.radios[i]
+						});
+					}
+				}
+			});
 			
 			//Tell other players a new player has joined
 			socket.broadcast
@@ -277,7 +295,19 @@
 		});
 		socket.on('radioBroadcast', function(radioData){
 			radioData.time = Date.now();
+			room.radios[radioData.radioIndex] = radioData.state;
 			io.in(room.name).emit('radiosToRoom', radioData);
+			var winner = room.radios[0];
+			for(var i = 0; i<room.radios.length; i++){
+				if(winner !== room.radios[i]){
+					winner = null;
+					break
+				}
+			}
+			if(winner !== null){
+				io.in(room.name).emit('win', {winningTeam:room.mapData.teamNames[winner]});
+				room.radios = room.mapData.radioStartStates;
+			}
 		});
 		//Update the server about a mouse position, player index, and time of polling
 //		socket.on('mouseUpdate', function(mouseData){

@@ -19,6 +19,7 @@ Handlebars.registerHelper("map", function(mapData, options){
 			.mapGridSize : [x, y]
 			.teamNames[i] : str
 			.radioGridLoc[i] : [x, y]
+			.radioStartStates[i] : [int]
 	*/
 	var startBoxes = [];
 	for(var i = 0; i<mapData.startFields.length; i++){
