@@ -4,26 +4,26 @@ function onNewPlayerJoin(username){//TODO
 	console.log(username + " joined!");
 }
 
-function onRoomUpdate(gameData){//TODO
-	/*
-	input structure:
-		gameData
-			.mouseData
-				.cur[i]
-					.pos : int[2]
-					.vel : int[2]
-					.time: int
-				.prev[i]
-					.pos : int[2]
-					.vel : int[2]
-					.time: int
-			.radios[i]
-				.state : int
-				.time  : int
-		}
-	*/
-
-}
+//function onRoomUpdate(gameData){//TODO
+//	/*
+//	input structure:
+//		gameData
+//			.mouseData
+//				.cur[i]
+//					.pos : int[2]
+//					.vel : int[2]
+//					.time: int
+//				.prev[i]
+//					.pos : int[2]
+//					.vel : int[2]
+//					.time: int
+//			.radios[i]
+//				.state : int
+//				.time  : int
+//		}
+//	*/
+//
+//}
 
 function onLoad(){
 	setupSocket();
@@ -41,46 +41,69 @@ function setRoomIndex(i){
 	ROOM_INDEX = i;
 }
 
+var ROOM_NAME = "";
+function setRoomName(roomName){
+	ROOM_NAME = roomName;
+}
+
 function onJoinRoom(roomData){//TODO
 	/*
 	input structure:
 		roomData
+			.roomIndex
 			.roomName : string
 			.team : int
 			.mapData: JSON of map file data
 	*/
+	setRoomName(roomData(roomData.roomName));
 	console.log("Joined Room " + roomData.roomName + " on team " + roomData.team);
-	displayMapFromFile(roomData);
+	displayMapFromRoomData(roomData);
 	socketUpdatesFrom(roomData.roomName);
 }
 
-function displayMapFromFile(mapContext){
+function displayMapFromRoomData(mapContext){
 	document.getElementsByClassName("mapHolder")[0].innerHTML =
 		RadioWars.templates.map(mapContext);
 }
 
-var SERVER_TIME = 0;
+var SERVER_OFFSET = 0;
 function onSyncTime(serverTime){
-	SERVER_TIME = serverTime;
+	SERVER_OFFSET = Date.now() - serverTime;
 }
 
 function gameTimeNow(){
-	return SERVER_TIME-Date.now();
+	return Date.now()+SERVER_OFFSET;
 }
 
 function handleMouseMove(event){
-	socket.emit('mouseUpdate',  {
-		mouseCoords: [event.pageX, event.pageY], 
-		index: ROOM_INDEX, 
-		time: gameTimeNow()})
+	socket.broadcast.to(ROOM_NAME).emit('mouseBroadcast',  {
+			mouseCoords: [event.pageX, event.pageY], 
+			index: ROOM_INDEX, 
+			time: gameTimeNow()}
+	);	
+}
+
+function onMouseBroadcast(mouseData){//TODO
 }
 
 function onRadioClick(value, radioIndex){
-	socket.emit('radioUpdate', [value, gameTimeNow(), radioIndex]);
+	socket.broadcast.to(ROOM_NAME).emit('radioBroadcast', {state: value, time: gameTimeNow(), radioIndex: radioIndex});
 }
+function onRadioBroadcast(radioData){
+	if(onRadioBroadcast.times[onradioData.radioIndex] === undefined){
+		onRadioBroadcast.times[onradioData.radioIndex] = -1; //SINCE THE BEGINING OF TIME!
+	}
+	if(radioData.time>onRadioBroadcast.times[onradioData.radioIndex]){
+		document.getElementById("button_"+radioData.state+"_"+radioData.radioIndex);
+		onRadioBroadcast.times[onradioData.radioIndex] = gameTimeNow();
+	}
+}
+onRadioBroadcast.times = [];
+
 function login(userdata){
 	socket.emit('login', userdata);
 }
+
 
 function gotoRoom(roomNumber){
 	hideButtons();
@@ -97,4 +120,4 @@ function hideButtons(){
 
 document.addEventListener("DOMContentLoaded", onLoad);
 
-document.onmousemove = handleMouseMove;
+//document.onmousemove = handleMouseMove;

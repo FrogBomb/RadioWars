@@ -191,7 +191,10 @@
 		res.sendFile(__dirname + "/css/combined.css");
 	});
 	
-	var UPDATESPEED =  16; //ms
+	var UPDATESPEED =  10000; //ms
+	setInterval(function(){
+		io.emit('syncTime', Date.now());
+	},UPDATESPEED)
 	io.on('connection', function(socket){
 		
 		console.log("Socket Connected!");
@@ -214,6 +217,7 @@
 			socket.handshake.session.userdata = userdata;
 		});
 		
+				   UPDATESPEED);
 		//gameroom: join the room with the given room number
 		socket.on('gameroom', function(roomNumber){
 			
@@ -221,13 +225,14 @@
 			var roomIndex = room.addPlayer();
 			socket.handshake.session.roomIndex = roomIndex;
 			
-			socket.emit('roomIndex', roomIndex);
+//			socket.emit('roomIndex', roomIndex);
 				
 			socket.handshake.session.roomNumber = roomNumber;
 			
 			socket
 				.emit('joinedRoom', 
 					{
+						roomIndex: roomIndex,
 						roomName: room.name,
 						team: room.getRadioTeam(socket.handshake.session.roomIndex),
 						mapData: ROOMS[roomNumber].mapData
@@ -243,16 +248,17 @@
 			
 			//Give the joined player room information and assign them a team
 			
+//			Just using socket.broadcast on client side instead for now
 			
-			//Send regular updates to the joining player according to their room name
-			getUpdates = setInterval(function(){
-				socket
-					.emit('updateFromRoom ' + room.name, 
-						{
-							mouseData: {cur: room.mouses, prev: room.prevMouses},
-							radios: room.gameState.radios
-						});
-			}, UPDATESPEED);
+//			//Send regular updates to the joining player according to their room name
+//			getUpdates = setInterval(function(){
+//				socket
+//					.emit('updateFromRoom ' + room.name, 
+//						{
+//							mouseData: {cur: room.mouses, prev: room.prevMouses},
+//							radios: room.gameState.radios
+//						});
+//			}, UPDATESPEED);
 			
 			//Handle for a user leaving a gameroom.
 			socket.on('leaveGameroom', function(){

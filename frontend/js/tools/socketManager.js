@@ -1,6 +1,8 @@
 var socket;
 function setupSocket(){
 	socket = io.connect(window.location.href);
+	socket.on('mouseBroadcast', onMouseBroadcast);
+	socket.on('radioBroadcast', onRadioBroadcast);
 	socket.on('newPlayer', onNewPlayerJoin);
 	socket.on('roomIndex', setRoomIndex);
 	socket.on('joinedRoom', onJoinRoom);
@@ -9,9 +11,9 @@ function setupSocket(){
 
 
 
-function socketUpdatesFrom(roomName){
-	socket.removeAllListeners('updateFromRoom '+ socketUpdatesFrom.oldRoomname);
-	socket.on('updateFromRoom ' + roomName, onRoomUpdate)
-}
+//function socketUpdatesFrom(roomName){
+//	socket.removeAllListeners('updateFromRoom '+ socketUpdatesFrom.oldRoomname);
+//	socket.on('updateFromRoom ' + roomName, onRoomUpdate)
+//}
 
 socketUpdatesFrom.oldRoomName = "";
