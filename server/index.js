@@ -197,6 +197,7 @@
 	setInterval(function(){
 		io.emit('syncTime', Date.now());
 	},UPDATESPEED);
+	
 	io.on('connection', function(socket){
 		
 		console.log("Socket Connected!");
@@ -218,8 +219,6 @@
 		socket.on("login", function(userdata) {
 			socket.handshake.session.userdata = userdata;
 		});
-		
-				   UPDATESPEED);
 		//gameroom: join the room with the given room number
 		socket.on('gameroom', function(roomNumber){
 			
