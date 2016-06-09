@@ -15,5 +15,5 @@ function setupSocket(){
 //	socket.removeAllListeners('updateFromRoom '+ socketUpdatesFrom.oldRoomname);
 //	socket.on('updateFromRoom ' + roomName, onRoomUpdate)
 //}
-
-socketUpdatesFrom.oldRoomName = "";
+//
+//socketUpdatesFrom.oldRoomName = "";
