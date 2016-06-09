@@ -57,6 +57,7 @@ function onJoinRoom(roomData){//TODO
 	*/
 	setRoomName(roomData.roomName);
 	console.log("Joined Room " + roomData.roomName + " on team " + roomData.team);
+	document.getElementById('team').innerHTML = "<h1 style='color:"+roomData.mapData.teamNames[roomData.team]+"'>You are on team " + roomData.mapData.teamNames[roomData.team] + "</h1>";
 	displayMapFromRoomData(roomData);
 	setTimeout(function(){socket.emit('roomLoaded', {})}, 10);
 //	socketUpdatesFrom(roomData.roomName);
