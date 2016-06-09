@@ -66,34 +66,34 @@
 	}
 	
 	//Constructor for a new RadioState
-	function RadioGroupState(time, state){
-		//integer indicating the current value of each radio button group, and the time when it was last clicked.
-		if(!state){
-			state = 0;
-		}
-		if(!time){
-			time = 0;
-		}
-		this.state = state;
-		this.time = time;
-	}
-	RadioGroupState.prototype = Object.create({
-		update: function(time, newState){
-			if(this.time<time){
-				this.time = time;
-				this.state = newState;
-			}
-		}
-	});
-	
-	//Constructor for a new GameState (Reference for what the status of the game is). numRadios arguement is optional.
-	function GameState(numRadios){
-		//array of radioGroupStates, indicating the current value of each radio button group.
-		this.radios = [];
-		for(var i = 0; i<numRadios; i++){
-			this.radios.push(new RadioGroupState());
-		}
-	}
+//	function RadioGroupState(time, state){
+//		//integer indicating the current value of each radio button group, and the time when it was last clicked.
+//		if(!state){
+//			state = 0;
+//		}
+//		if(!time){
+//			time = 0;
+//		}
+//		this.state = state;
+//		this.time = time;
+//	}
+//	RadioGroupState.prototype = Object.create({
+//		update: function(time, newState){
+//			if(this.time<time){
+//				this.time = time;
+//				this.state = newState;
+//			}
+//		}
+//	});
+//	
+//	//Constructor for a new GameState (Reference for what the status of the game is). numRadios arguement is optional.
+//	function GameState(numRadios){
+//		//array of radioGroupStates, indicating the current value of each radio button group.
+//		this.radios = [];
+//		for(var i = 0; i<numRadios; i++){
+//			this.radios.push(new RadioGroupState());
+//		}
+//	}
 
 	GameState.prototype = Object.create({
 		updateRadio: function(radio, i){
@@ -121,30 +121,31 @@
 		fs.readFile(mapInfoRef, readMapFileCallback.bind(this))
 		//Server side game state.
 		this.gameState = new GameState();
-		//array of current mouse positions (pos), velocities (vel), and update timestamps (time).
-		this.mouses = [];
-		//array of previous mouse positions (pos), velocities (vel), and update timestamps (time).
-		this.prevMouses = [];
+		this.numPlayers = 0;
+//		//array of current mouse positions (pos), velocities (vel), and update timestamps (time).
+//		this.mouses = [];
+//		//array of previous mouse positions (pos), velocities (vel), and update timestamps (time).
+//		this.prevMouses = [];
 	}
 	
 	
 	Room.prototype = Object.create({
-		updateMouse: function(newP, newV, time, index){
-			if(time>this.mouses[index].time){
-				this.prevMouses[index] = this.mouses[index];
-				this.mouses[index] = {pos: newP, vel: newV, time: time}; 
-			}
-		},
+//		updateMouse: function(newP, newV, time, index){
+//			if(time>this.mouses[index].time){
+//				this.prevMouses[index] = this.mouses[index];
+//				this.mouses[index] = {pos: newP, vel: newV, time: time}; 
+//			}
+//		},
 		/*
 		Updates the room to have a new player and
 		returns the roomIndex to be able to interact with the room.
 		*/
 		addPlayer: function(){
 			
-			this.mouses.push({pos:[-200, -200], vel: [0, 0], time: -1});
-			this.prevMouses.push({pos:[-200, -200], vel: [0, 0], time: -1});
-			
-			return this.mouses.length - 1;
+//			this.mouses.push({pos:[-200, -200], vel: [0, 0], time: -1});
+//			this.prevMouses.push({pos:[-200, -200], vel: [0, 0], time: -1});
+			this.numPlayers++;
+			return this.numPlayers-1;
 			
 		},
 		//Returns radio team of the player with the passed roomIndex
@@ -153,11 +154,12 @@
 				return roomIndex%this.mapData.numTeams;
 			}
 			return -1;//Map file not yet read
-		},
-		//Clears the room
-		clear: function(){ Room(this.name, this.mapInfoRef) },
-		//Starts a game in the room
-		start: function(){ console.log("Game started")}//TODO
+		}
+//	
+//		//Clears the room
+//		,clear: function(){ Room(this.name, this.mapInfoRef) }
+//		//Starts a game in the room
+//		,start: function(){ console.log("Game started")}//TODO
 	});
 	
 	//Gets the player room index of the request
@@ -194,7 +196,7 @@
 	var UPDATESPEED =  10000; //ms
 	setInterval(function(){
 		io.emit('syncTime', Date.now());
-	},UPDATESPEED)
+	},UPDATESPEED);
 	io.on('connection', function(socket){
 		
 		console.log("Socket Connected!");
@@ -290,12 +292,12 @@
 //		});
 		
 		//Update the server about the radio state and time of polling and index
-		socket.on('radioUpdate', function(radioData){
-			if(room){
-				room.gameState.updateRadio({state:radioData[0],
-										    time: radioData[1]}, radioData[2]);
-			}
-		});
+//		socket.on('radioUpdate', function(radioData){
+//			if(room){
+//				room.gameState.updateRadio({state:radioData[0],
+//										    time: radioData[1]}, radioData[2]);
+//			}
+//		});
 		
 		//Log Disconnects
 		socket.on('disconnect', function(){
