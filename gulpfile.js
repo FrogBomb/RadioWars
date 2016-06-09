@@ -6,6 +6,7 @@ var concat = require('gulp-concat');
 var uglify = require('gulp-uglify');
 var gulpIf = require('gulp-if');
 var del = require('del');
+var insert = require('gulp-insert');
 
 gulp.task('clean', function(){
     return del(['./dist/**/*']);
@@ -34,6 +35,7 @@ gulp.task('moveHTML',['clean'], function(){
 gulp.task('combineFrontendJs', ['clean'], function(){
     return gulp.src('./frontend/js/**/*.js')
         .pipe(concat('compiled.js'))
+		.pipe(insert.wrap(";(function(){","})();"))
 //        .pipe(uglify())
         .pipe(gulp.dest('dist/js/'));
 });
