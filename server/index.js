@@ -61,8 +61,8 @@
 		ROOMS.length = 0;
 		//Generating default rooms
 		ROOMS.push(new Room('noob room', MAPS['alpha']));
-		ROOMS.push(new Room('kinda good room', MAPS['alpha']));
-		ROOMS.push(new Room('pro room', MAPS['alpha']));
+		ROOMS.push(new Room('kinda good room', MAPS['beta']));
+		ROOMS.push(new Room('pro room', MAPS['delta']));
 	}
 	
 	//Constructor for a new RadioState
