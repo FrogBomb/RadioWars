@@ -55,10 +55,10 @@ function onJoinRoom(roomData){//TODO
 			.team : int
 			.mapData: JSON of map file data
 	*/
-	setRoomName(roomData(roomData.roomName));
+	setRoomName(roomData.roomName);
 	console.log("Joined Room " + roomData.roomName + " on team " + roomData.team);
 	displayMapFromRoomData(roomData);
-	socketUpdatesFrom(roomData.roomName);
+//	socketUpdatesFrom(roomData.roomName);
 }
 
 function displayMapFromRoomData(mapContext){
@@ -87,17 +87,26 @@ function onMouseBroadcast(mouseData){//TODO
 }
 
 function onRadioClick(value, radioIndex){
-	socket.broadcast.to(ROOM_NAME).emit('radioBroadcast', {state: value, time: gameTimeNow(), radioIndex: radioIndex});
+	socket.emit('radioBroadcast', {state: value, radioIndex: radioIndex});
 }
 function onRadioBroadcast(radioData){
-	if(onRadioBroadcast.times[onradioData.radioIndex] === undefined){
-		onRadioBroadcast.times[onradioData.radioIndex] = -1; //SINCE THE BEGINING OF TIME!
+//	var firstClick = false;
+	if(onRadioBroadcast.times[radioData.radioIndex] === undefined){
+		onRadioBroadcast.times[radioData.radioIndex] = -1; //SINCE THE BEGINING OF TIME!
+//		firstClick = true;
 	}
-	if(radioData.time>onRadioBroadcast.times[onradioData.radioIndex]){
-		document.getElementById("button_"+radioData.state+"_"+radioData.radioIndex);
-		onRadioBroadcast.times[onradioData.radioIndex] = gameTimeNow();
+	if(radioData.time>onRadioBroadcast.times[radioData.radioIndex]){
+		var button = document.getElementById("button_"+radioData.state+"_"+radioData.radioIndex);
+		button.checked = true;
+		button.parentNode.parentNode.classList.remove("red-selected","blue-selected");
+		var newClass = button.parentNode.innerHTML.split(">")[1]+"-selected";
+		button.parentNode.parentNode.classList.add(newClass);
+		console.log(button.parentNode.parentNode.classList);
+		onRadioBroadcast.prevClass = newClass;
+		onRadioBroadcast.times[radioData.radioIndex] = gameTimeNow();
 	}
 }
+
 onRadioBroadcast.times = [];
 
 function login(userdata){

@@ -10,9 +10,16 @@
 }
 .blue-button{
 }
-.red{
+.red-spawn{
+	border-color: lightcoral;
+	
+}
+.blue-spawn{
+	border-color: lightblue;
+}
+.red-selected{
 	background-color: lightcoral;
 }
-.blue{
+.blue-selected{
 	background-color: lightblue;
 }

@@ -34,7 +34,7 @@ Handlebars.registerHelper("map", function(mapData, options){
 			var coords = (""+i)+"x"+j;	
 			for(var k = 0; k < startBoxes.length; k++){
 				if(startBoxes[k].hitsPoint(i, j)){
-					startTeamClass += " " + mapData.teamNames[k];
+					startTeamClass += " " + mapData.teamNames[k] + "-spawn";
 				}
 			}
 			var radioIndex = indexOfTwoTupleInArray([i, j], mapData.radioGridLoc);

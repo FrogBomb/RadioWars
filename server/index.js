@@ -275,7 +275,10 @@
 				socket.handshake.session.roomIndex = null;
 			});
 		});
-		
+		socket.on('radioBroadcast', function(radioData){
+			radioData.time = Date.now();
+			io.in(room.name).emit('radiosToRoom', radioData);
+		});
 		//Update the server about a mouse position, player index, and time of polling
 //		socket.on('mouseUpdate', function(mouseData){
 //			if(room){

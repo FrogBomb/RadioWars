@@ -1,8 +1,8 @@
 var socket;
 function setupSocket(){
 	socket = io.connect(window.location.href);
-	socket.on('mouseBroadcast', onMouseBroadcast);
-	socket.on('radioBroadcast', onRadioBroadcast);
+//	socket.on('mouseBroadcast', onMouseBroadcast);
+	socket.on('radiosToRoom', onRadioBroadcast);
 	socket.on('newPlayer', onNewPlayerJoin);
 	socket.on('roomIndex', setRoomIndex);
 	socket.on('joinedRoom', onJoinRoom);
