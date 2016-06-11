@@ -72,4 +72,4 @@ gulp.task('moveMaps', ['clean'], function(){
 
 
 		  
-gulp.task('default', ['clean','handlebars', 'moveHTML','movePackageJSON', 'combineFrontendJs', 'combineCSS', 'moveIndexJS', 'moveServerJSON', 'moveConfigFile', 'moveMaps']);
+gulp.task('default', ['clean','handlebars', 'moveHTML','movePackageJSON', 'combineFrontendJs', 'combineCSS', 'moveIndexJS', 'moveServerJSON', 'moveMaps']);
