@@ -36,7 +36,7 @@ gulp.task('combineFrontendJs', ['clean'], function(){
     return gulp.src('./frontend/js/**/*.js')
         .pipe(concat('compiled.js'))
 //		.pipe(insert.wrap(";(function(){","\n})();")) Need to generate page to do
-//        .pipe(uglify())
+        .pipe(uglify())
         .pipe(gulp.dest('dist/js/'));
 });
 
@@ -48,7 +48,7 @@ gulp.task('combineCSS', ['clean'], function(){
 
 gulp.task('moveIndexJS', ['clean'], function(){
 	return gulp.src('./server/index.js')
-//        .pipe(uglify())
+        .pipe(uglify())
         .pipe(gulp.dest('dist'));
 });
 
