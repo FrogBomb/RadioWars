@@ -9,3 +9,6 @@ To distribute:
 	Then the dist folder will contain the files and folders needed to run on a server. Then, on server, run:
 	>>node index.js
 	
+SEE MY CURRENT BUILD!
+
+http://radio-wars.herokuapp.com/
