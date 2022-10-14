@@ -19,6 +19,7 @@
 	var http = require('http');
 	
 	var session = require('express-session');
+	const MemoryStore = require('memorystore')(session)
 	
 	
 	var app = express();
@@ -26,10 +27,16 @@
 	var io = require("socket.io")(server);
 	
 	var sessionSet = session({
-		  secret: System.getenv("secret") || "thisIsNotDeployedCorrectly",
-		  resave: false,
-		  saveUninitialized: true,
-		  cookie: { secure: true }
+		secret: System.getenv("secret") || "thisIsNotDeployedCorrectly",
+		resave: false,
+		saveUninitialized: true,
+		cookie: { 
+			secure: true,
+			maxAge: 86400000
+		},
+		store: new MemoryStore({
+			checkPeriod: 86400000 // prune expired entries every 24h
+		}),
 	});
 	
 	var sharedsession = require("express-socket.io-session");
