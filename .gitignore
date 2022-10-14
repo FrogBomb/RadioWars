@@ -3,6 +3,7 @@ config.js
 
 #Node Files
 node_modules
+package-lock.json
 
 #Distribution folder
 dist/
@@ -54,6 +55,3 @@ $RECYCLE.BIN/
 Network Trash Folder
 Temporary Items
 .apdisk
-
-package-lock.json
-node_modules/
