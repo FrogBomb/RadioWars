@@ -12,7 +12,7 @@ gulp.task('clean', function () {
 
 gulp.task('handlebars', function () {
   return gulp.src('./frontend/hbsTemplates/*.hbs')
-    .pipe(handlebars())
+    .pipe(handlebars({handlebars: require("handlebars")}))
     .pipe(wrap('Handlebars.template(<%= contents %>)'))
     .pipe(declare({
       namespace: 'RadioWars.templates',
