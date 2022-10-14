@@ -260,6 +260,7 @@
 			socket.join(room.name);
 			
 			socket.on('roomLoaded', function(){
+				if(room === null){return;}
 				for(var i = 0; i<room.radios.length; i++){
 					if(room.radios[i] !== undefined){
 						io.in(room.name).emit('radiosToRoom', {
