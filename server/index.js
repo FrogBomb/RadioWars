@@ -305,6 +305,7 @@
 			});
 		});
 		socket.on('radioBroadcast', function(radioData){
+			if(room === null){return;}
 			radioData.time = Date.now();
 			room.radios[radioData.radioIndex] = radioData.state;
 			io.in(room.name).emit('radiosToRoom', radioData);
