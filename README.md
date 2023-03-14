@@ -12,3 +12,5 @@ To distribute:
 ~SEE MY CURRENT BUILD!~
 
 ~http://radio-wars.herokuapp.com/~
+
+RIP Heroku
